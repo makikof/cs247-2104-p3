@@ -50,8 +50,8 @@
     $("#submission input").keydown(function( event ) {
       if (event.which == 13) {
         if(has_emotions($(this).val())){
-          display_video_options();
-          fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blobs[0], c: my_color});
+          display_video_options(fb_instance_stream, username+": " +$(this).val(), my_color);
+          // fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blobs[0], c: my_color});
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
         }
@@ -66,15 +66,40 @@
 
 
 
-  function display_video_options() {
-    console.log("displaying video options");
-    var options_div = "<div class='video_options'>"
-    for(var i=0; i<cur_video_blobs.length; i++) {
-      options_div += "<span class='option'>" + videoElement(cur_video_blobs[i]) + "</span>"
-      console.log("video " + i + "!!!");
+  function display_video_options(fb_instance_stream, message, color) {
+
+    // var modal = document.createElement("div");
+    // modal.className = "modal";
+
+    // var outer_div = document.createElement("div");
+    // outer_div.className = "modal-dialog";
+
+    // var options_div = document.createElement("div");
+    // options_div.className = "video_options modal-content"
+
+    // var header_div = document.createElement("div");
+    // header_div.className = "modal-header";
+    // var title_div = document.createElement("h4");
+    // title_div.innerHTML = "Choose a reaction video to send:";
+    // header_div.appendChild(title_div);
+    // options_div.appendChild(header_div);
+
+    var modal_div = $("#video_options");
+    var body_div = $("#options_body");
+    var video_options = cur_video_blobs.slice(0);
+    for(var i=0; i<video_options.length; i++) {
+      var video_span = document.createElement("span");
+      video_span.className = "option";
+      video_span.setAttribute("id", i);
+      video_span.appendChild(videoElement(video_options[i]));
+      body_div.appendChild(video_span);
+      video_span.onclick = function() {
+        var selected_video = parseInt($(this).attr("id"));
+        fb_instance_stream.push({m: message, v:video_options[selected_video], c: color});
+        modal_div.hide();
+      }
     }
-    options_div += "</div>"
-    //document.getElementById("conversation").appendChild(options_div);
+    modal_div.show();
   }
 
 
