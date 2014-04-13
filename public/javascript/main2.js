@@ -39,7 +39,7 @@
     });
 
     // block until username is answered
-    var username = window.prompt("Welcome, warrior! please declare your name?");
+    var username = window.prompt("Hi! What's your name?");
     if(!username){
       username = "anonymous"+Math.floor(Math.random()*1111);
     }
@@ -50,38 +50,31 @@
     $("#submission input").keydown(function( event ) {
       if (event.which == 13) {
         if(has_emotions($(this).val())){
-          var message = username+": " +$(this).val();
-          record_video(message, my_color);
+          $('#video_chooser').modal('show');      
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
+          $(this).val("");
         }
-        $(this).val("");
         scroll_to_bottom(0);
       }
     });
 
+    $('#okButton').click(function(){
+      var message = username+": " +$("#submission input").val();
+      fb_instance_stream.push({m:message, v:cur_video_blob, c: my_color});
+      $("#submission input").val("");
+      $('#video_chooser').modal('hide');
+    });
+
+    $('#noVideo').click(function(){
+      var message = username+": " +$("#submission input").val();
+      fb_instance_stream.push({m:message, c: my_color});
+      $("#submission input").val("");
+      $('#video_chooser').modal('hide');
+    });
+
     // scroll to bottom in case there is already content
     scroll_to_bottom(1300);
-  }
-
-//Popup for when user enters :) :( or lol
-  function record_video(mesage, color){
-    console.log('inRecord');
-    $('#video_chooser').fadeIn();
-
-      // counter
-    //  var time = 0;
-    // var second_counter = document.getElementById('second_counter');
-    //  var second_counter_update = setInterval(function(){
-     //   second_counter.innerHTML = time++;
-    //  },1000);
-
-  $('#okbutton').click(function(){
-    fb_instance_stream.push({m:message, v:cur_video_blob, c: color});
-    $('#video_chooser').fadeOut();
-  });
-
-
   }
 
   // creates a message node and appends it to the conversation
@@ -141,13 +134,6 @@
       video.play();
       webcam_stream.appendChild(video);
 
-      // counter
-      var time = 0;
-      var second_counter = document.getElementById('second_counter');
-      var second_counter_update = setInterval(function(){
-        second_counter.innerHTML = time++;
-      },1000);
-
       // now record stream in 5 seconds interval
       var video_container = document.getElementById('video_container');
       var mediaRecorder = new MediaStreamRecorder(stream);
@@ -170,7 +156,7 @@
       };
 
       $('#recordButton').click(function() {
-        mediaRecorder.start();
+        mediaRecorder.start(5000);
       });
 
       $('#stopButton').click(function() {
@@ -185,7 +171,7 @@
 
     // get video stream from user. see https://github.com/streamproc/MediaStreamRecorder
     navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
-  }
+  };
 
   // check to see if a message qualifies to be replaced with video.
   var has_emotions = function(msg){
