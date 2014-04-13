@@ -2,13 +2,14 @@ var express = require('express');
 var exphbs  = require('express3-handlebars');
 var http = require('http');
 var path = require('path');
+var handlebars = require('express3-handlebars');
 var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 // Declare your route variables here.
-var routes = require('./routes');
+var index = require('./routes/index');
 var app = express();
 
 // enable sockiet io support
@@ -22,9 +23,22 @@ if (app.get('env') === 'development') {
     console.log("Now listening on port 3000");
 }
 
+hbs = handlebars.create({
+    helpers: {
+        //usage: {{dateFormat 1392115303100 format="MM/DD/YYYY"}}
+        dateFormat: function(context, block) {
+            var f = block.hash.format || "MMM DD, YYYY hh:mm:ss A";
+            return moment(context).format(f); //had to remove Date(context)
+        },
+
+        breakLines: function(text) {
+            return text.replace(/(\r\n|\n|\r)/gm, '<br>');
+        }
+    }
+});
 
 // view engine setup
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.engine('handlebars', hbs.engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'handlebars');
 
@@ -38,7 +52,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(app.router);
 
 // Declare your routes here
-app.get('/', routes.index);
+app.get('/proto1', index.proto1get);
+app.get('/proto2', index.proto2get);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
