@@ -13,7 +13,7 @@
 
   function connect_to_chat_firebase(){
     /* Include your Firebase link here!*/
-    fb_instance = new Firebase("https://gsroth-p3-v1.firebaseio.com");
+    fb_instance = new Firebase("https://makikofp3.firebaseio.com");
 
     // generate new chatroom id or use existing id
     var url_segments = document.location.href.split("/#");
@@ -50,7 +50,8 @@
     $("#submission input").keydown(function( event ) {
       if (event.which == 13) {
         if(has_emotions($(this).val())){
-          fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blob, c: my_color});
+          var message = username+": " +$(this).val();
+          record_video(message, my_color);
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
         }
@@ -61,6 +62,26 @@
 
     // scroll to bottom in case there is already content
     scroll_to_bottom(1300);
+  }
+
+//Popup for when user enters :) :( or lol
+  function record_video(mesage, color){
+    console.log('inRecord');
+    $('#video_chooser').fadeIn();
+
+      // counter
+    //  var time = 0;
+    // var second_counter = document.getElementById('second_counter');
+    //  var second_counter_update = setInterval(function(){
+     //   second_counter.innerHTML = time++;
+    //  },1000);
+
+  $('#okbutton').click(function(){
+    fb_instance_stream.push({m:message, v:cur_video_blob, c: color});
+    $('#video_chooser').fadeOut();
+  });
+
+
   }
 
   // creates a message node and appends it to the conversation
@@ -147,11 +168,14 @@
             cur_video_blob = b64_data;
           });
       };
-      setInterval( function() {
+
+      $('#recordButton').click(function() {
+        mediaRecorder.start();
+      });
+
+      $('#stopButton').click(function() {
         mediaRecorder.stop();
-        mediaRecorder.start(3000);
-      }, 3000 );
-      console.log("connect to media stream!");
+      });
     }
 
     // callback if there is an error when we try and get the video stream
