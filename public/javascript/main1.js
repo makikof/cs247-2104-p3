@@ -3,7 +3,7 @@
 
 (function() {
 
-  var cur_video_blob = null;
+  var cur_video_blobs = [];
   var fb_instance;
 
   $(document).ready(function(){
@@ -50,7 +50,8 @@
     $("#submission input").keydown(function( event ) {
       if (event.which == 13) {
         if(has_emotions($(this).val())){
-          fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blob, c: my_color});
+          display_video_options();
+          fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blobs[0], c: my_color});
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
         }
@@ -63,28 +64,47 @@
     scroll_to_bottom(1300);
   }
 
+
+
+  function display_video_options() {
+    console.log("displaying video options");
+    var options_div = "<div class='video_options'>"
+    for(var i=0; i<cur_video_blobs.length; i++) {
+      options_div += "<span class='option'>" + videoElement(cur_video_blobs[i]) + "</span>"
+      console.log("video " + i + "!!!");
+    }
+    options_div += "</div>"
+    //document.getElementById("conversation").appendChild(options_div);
+  }
+
+
+  function videoElement(data) {
+    var video = document.createElement("video");
+    video.autoplay = true;
+    video.controls = false; // optional
+    video.loop = true;
+    video.width = 120;
+
+    var source = document.createElement("source");
+    source.src =  URL.createObjectURL(base64_to_blob(data));
+    source.type =  "video/webm";
+
+    video.appendChild(source);
+    return video;
+
+    // for gif instead, use this code below and change mediaRecorder.mimeType in onMediaSuccess below
+    // var video = document.createElement("img");
+    // video.src = URL.createObjectURL(base64_to_blob(data.v));
+
+
+  }
+
+
   // creates a message node and appends it to the conversation
   function display_msg(data){
     $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
     if(data.v){
-      // for video element
-      var video = document.createElement("video");
-      video.autoplay = true;
-      video.controls = false; // optional
-      video.loop = true;
-      video.width = 120;
-
-      var source = document.createElement("source");
-      source.src =  URL.createObjectURL(base64_to_blob(data.v));
-      source.type =  "video/webm";
-
-      video.appendChild(source);
-
-      // for gif instead, use this code below and change mediaRecorder.mimeType in onMediaSuccess below
-      // var video = document.createElement("img");
-      // video.src = URL.createObjectURL(base64_to_blob(data.v));
-
-      document.getElementById("conversation").appendChild(video);
+      document.getElementById("conversation").appendChild(videoElement(data.v));
     }
   }
 
@@ -139,12 +159,15 @@
       mediaRecorder.video_height = video_height/2;
 
       mediaRecorder.ondataavailable = function (blob) {
-          //console.log("new data available!");
+          console.log("new data available!");
           video_container.innerHTML = "";
 
           // convert data into base 64 blocks
           blob_to_base64(blob,function(b64_data){
-            cur_video_blob = b64_data;
+            if(cur_video_blobs.length == 3) {
+              cur_video_blobs.shift();
+            }
+            cur_video_blobs.push(b64_data);
           });
       };
       setInterval( function() {
