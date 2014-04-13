@@ -13,7 +13,7 @@
 
   function connect_to_chat_firebase(){
     /* Include your Firebase link here!*/
-    fb_instance = new Firebase("https://gsroth-p3-v1.firebaseio.com");
+    fb_instance = new Firebase("https://makikofp3.firebaseio.com");
 
     // generate new chatroom id or use existing id
     var url_segments = document.location.href.split("/#");
@@ -39,7 +39,7 @@
     });
 
     // block until username is answered
-    var username = window.prompt("Welcome, warrior! please declare your name?");
+    var username = window.prompt("Hi! What's your name?");
     if(!username){
       username = "anonymous"+Math.floor(Math.random()*1111);
     }
@@ -50,13 +50,27 @@
     $("#submission input").keydown(function( event ) {
       if (event.which == 13) {
         if(has_emotions($(this).val())){
-          fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blob, c: my_color});
+          $('#video_chooser').modal('show');      
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
+          $(this).val("");
         }
-        $(this).val("");
         scroll_to_bottom(0);
       }
+    });
+
+    $('#okButton').click(function(){
+      var message = username+": " +$("#submission input").val();
+      fb_instance_stream.push({m:message, v:cur_video_blob, c: my_color});
+      $("#submission input").val("");
+      $('#video_chooser').modal('hide');
+    });
+
+    $('#noVideo').click(function(){
+      var message = username+": " +$("#submission input").val();
+      fb_instance_stream.push({m:message, c: my_color});
+      $("#submission input").val("");
+      $('#video_chooser').modal('hide');
     });
 
     // scroll to bottom in case there is already content
@@ -120,13 +134,6 @@
       video.play();
       webcam_stream.appendChild(video);
 
-      // counter
-      var time = 0;
-      var second_counter = document.getElementById('second_counter');
-      var second_counter_update = setInterval(function(){
-        second_counter.innerHTML = time++;
-      },1000);
-
       // now record stream in 5 seconds interval
       var video_container = document.getElementById('video_container');
       var mediaRecorder = new MediaStreamRecorder(stream);
@@ -147,11 +154,14 @@
             cur_video_blob = b64_data;
           });
       };
-      setInterval( function() {
+
+      $('#recordButton').click(function() {
+        mediaRecorder.start(5000);
+      });
+
+      $('#stopButton').click(function() {
         mediaRecorder.stop();
-        mediaRecorder.start(3000);
-      }, 3000 );
-      console.log("connect to media stream!");
+      });
     }
 
     // callback if there is an error when we try and get the video stream
@@ -161,7 +171,7 @@
 
     // get video stream from user. see https://github.com/streamproc/MediaStreamRecorder
     navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
-  }
+  };
 
   // check to see if a message qualifies to be replaced with video.
   var has_emotions = function(msg){

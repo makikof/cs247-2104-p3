@@ -4,21 +4,46 @@
     <meta charset="utf-8" />
     <title>CS247 Project 3 Proto2</title>
     <link rel="stylesheet" href='/stylesheets/main.css'>
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link href="/stylesheets/bootstrap-theme.min.css" rel="stylesheet">
     <script src='https://cdn.firebase.com/js/client/1.0.6/firebase.js'></script>
     <script src='javascript/jquery-1.11.0.min.js'></script>
     <script src='javascript/MediaStreamRecorder.js'></script>
     <script src='javascript/main2.js'></script>
+    <script src='javascript/bootstrap.min.js'></script>
+
 </head>
 <body>
 
-  <div>Welcome to {{title}}, enable camera to post video emoji!</div>
   <div id="waiting">Connecting to chat server...</div>
-  <div id="second_counter"></div>
-  <div id="conversation"></div>
-  <div id="submission">
-    <input type="text" placeholder="say something..">
+  <div id="conversation">
+      <div id="welcomeMessage">Welcome to {{title}}! Make sure to enable your camera by clicking "Allow" to post video emoji!</div>
   </div>
-  <div id="webcam_stream"></div>
+  <div id="submission">
+    <input type="text" placeholder="Say something...">
+  </div>
+
+
+<div class="modal fade" id="video_chooser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Record your emotion!</h4>
+      </div>
+      <div class="modal-body">
+        <div id="webcam_stream"></div>
+        <button class="btn btn-default" id="recordButton">Record</button>
+        <button class="btn btn-default" id="stopButton">Stop</button>
+      </div>
+      <div class="modal-footer">
+        <a href="#" id="noVideo">Send with no video</a>
+        <button type="button" class="btn btn-default" id="okButton">Send!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
   <div id="video_container"></div>
 
 </body>
