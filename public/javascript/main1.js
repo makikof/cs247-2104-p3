@@ -57,8 +57,8 @@
       display_msg({m:snapshot.val().name+" joined the room",c: snapshot.val().c});
     });
     fb_instance_stream.on("child_added",function(snapshot){
-      display_video_received(username, message);
       var message = snapshot.val();
+      display_video_received(username, message);
       if (messageFromPartner(message.m)) {
         last_partner = parseMessage(message.m)[0]
         partner_last_message = message.m;
