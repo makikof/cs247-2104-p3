@@ -15,6 +15,13 @@
     /* Include your Firebase link here!*/
     fb_instance = new Firebase("https://makikofp3.firebaseio.com");
 
+    $('#noVideo').click(function(){
+      var message = username+": " +$("#submission input").val();
+      fb_instance_stream.push({m:message, c: my_color});
+      $("#submission input").val("");
+      $('#video_options').modal('hide');
+    });
+
     // generate new chatroom id or use existing id
     var url_segments = document.location.href.split("/#");
     if(url_segments[1]){
@@ -49,14 +56,13 @@
     // bind submission box
     $("#submission input").keydown(function( event ) {
       if (event.which == 13) {
-        if(has_emotions($(this).val())){
+        if(has_emotions($(this).val()) && cur_video_blobs.length > 0){
           display_video_options(fb_instance_stream, username+": " +$(this).val(), my_color);
-          // fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blobs[0], c: my_color});
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
+          $(this).val("");
+          scroll_to_bottom(0);
         }
-        $(this).val("");
-        scroll_to_bottom(0);
       }
     });
 
@@ -68,24 +74,11 @@
 
   function display_video_options(fb_instance_stream, message, color) {
 
-    // var modal = document.createElement("div");
-    // modal.className = "modal";
+    $('#video_options').modal('show');   
+    var modal_div = document.getElementById("video_options");
+    var body_div = document.getElementById("options_body");
+    body_div.innerHTML = "";
 
-    // var outer_div = document.createElement("div");
-    // outer_div.className = "modal-dialog";
-
-    // var options_div = document.createElement("div");
-    // options_div.className = "video_options modal-content"
-
-    // var header_div = document.createElement("div");
-    // header_div.className = "modal-header";
-    // var title_div = document.createElement("h4");
-    // title_div.innerHTML = "Choose a reaction video to send:";
-    // header_div.appendChild(title_div);
-    // options_div.appendChild(header_div);
-
-    var modal_div = $("#video_options");
-    var body_div = $("#options_body");
     var video_options = cur_video_blobs.slice(0);
     for(var i=0; i<video_options.length; i++) {
       var video_span = document.createElement("span");
@@ -96,10 +89,11 @@
       video_span.onclick = function() {
         var selected_video = parseInt($(this).attr("id"));
         fb_instance_stream.push({m: message, v:video_options[selected_video], c: color});
-        modal_div.hide();
+        $('#video_options').modal('hide');  
+        $("#submission input").val("");
+        scroll_to_bottom();
       }
     }
-    modal_div.show();
   }
 
 
@@ -152,7 +146,7 @@
       // create video element, attach webcam stream to video element
       var video_width= 160;
       var video_height= 120;
-      var webcam_stream = document.getElementById('webcam_stream');
+      var webcam_stream = document.getElementById('webcam_stream_topright');
       var video = document.createElement('video');
       webcam_stream.innerHTML = "";
       // adds these properties to the video
