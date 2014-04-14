@@ -20,7 +20,12 @@ a {
 #webcam_stream video {
   border: 2px solid #dcc;
 }
+
 #video_chooser {
+  text-align: center;
+}
+
+#received_body {
   text-align: center;
 }
 

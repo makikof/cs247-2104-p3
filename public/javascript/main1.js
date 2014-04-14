@@ -5,6 +5,8 @@
 
   var cur_video_blobs = [];
   var fb_instance;
+  var last_partner;
+  var partner_last_message;
 
   $(document).ready(function(){
     connect_to_chat_firebase();
@@ -22,6 +24,11 @@
       $('#video_options').modal('hide');
     });
 
+    $('#okay').click(function(){
+      $("#submission input").val("");
+      $('#video_received').modal('hide');
+    });
+
     // generate new chatroom id or use existing id
     var url_segments = document.location.href.split("/#");
     if(url_segments[1]){
@@ -37,14 +44,6 @@
     var fb_instance_stream = fb_new_chat_room.child('stream');
     var my_color = "#"+((1<<24)*Math.random()|0).toString(16);
 
-    // listen to events
-    fb_instance_users.on("child_added",function(snapshot){
-      display_msg({m:snapshot.val().name+" joined the room",c: snapshot.val().c});
-    });
-    fb_instance_stream.on("child_added",function(snapshot){
-      display_msg(snapshot.val());
-    });
-
     // block until username is answered
     var username = window.prompt("Welcome, warrior! please declare your name?");
     if(!username){
@@ -52,6 +51,20 @@
     }
     fb_instance_users.push({ name: username,c: my_color});
     $("#waiting").remove();
+
+        // listen to events
+    fb_instance_users.on("child_added",function(snapshot){
+      display_msg({m:snapshot.val().name+" joined the room",c: snapshot.val().c});
+    });
+    fb_instance_stream.on("child_added",function(snapshot){
+      display_video_received(username, message);
+      var message = snapshot.val();
+      if (messageFromPartner(message.m)) {
+        last_partner = parseMessage(message.m)[0]
+        partner_last_message = message.m;
+      }
+      display_msg(snapshot.val());
+    });
 
     // bind submission box
     $("#submission input").keydown(function( event ) {
@@ -70,6 +83,28 @@
     scroll_to_bottom(1300);
   }
 
+  function messageFromPartner(username, message) {
+    if (!message) return false;
+    var sender = message.split(":")[0];
+    return sender != username;
+  }
+
+  function parseMessage(message) {
+    var message = message.split(": ");
+    return message;
+  }
+
+  function display_video_received(username, message) {
+    if (messageFromPartner(username, message.m) && last_partner == username) {
+      $('#video_received').modal('show'); 
+      parsed_message = parseMessage(message.m);
+      $('#received_title').text(parsed_message[0] + "'s reaction to your message \"" + parsed_message[1] + "\"");
+      var video = videoElement(message.v, 400);
+      var body_div = document.getElementById("received_body");
+      body_div.innerHTML = "";
+      body_div.appendChild(video);
+    }
+  }
 
 
   function display_video_options(fb_instance_stream, message, color) {
@@ -84,7 +119,7 @@
       var video_span = document.createElement("span");
       video_span.className = "option";
       video_span.setAttribute("id", i);
-      video_span.appendChild(videoElement(video_options[i]));
+      video_span.appendChild(videoElement(video_options[i], 150));
       body_div.appendChild(video_span);
       video_span.onclick = function() {
         var selected_video = parseInt($(this).attr("id"));
@@ -97,12 +132,12 @@
   }
 
 
-  function videoElement(data) {
+  function videoElement(data, width) {
     var video = document.createElement("video");
     video.autoplay = true;
     video.controls = false; // optional
     video.loop = true;
-    video.width = 120;
+    video.width = width;
 
     var source = document.createElement("source");
     source.src =  URL.createObjectURL(base64_to_blob(data));
@@ -123,7 +158,7 @@
   function display_msg(data){
     $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
     if(data.v){
-      document.getElementById("conversation").appendChild(videoElement(data.v));
+      document.getElementById("conversation").appendChild(videoElement(data.v, 120));
     }
   }
 
