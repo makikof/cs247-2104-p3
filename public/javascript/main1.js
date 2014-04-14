@@ -5,6 +5,8 @@
 
   var cur_video_blobs = [];
   var fb_instance;
+  var last_partner;
+  var partner_last_message;
 
   $(document).ready(function(){
     connect_to_chat_firebase();
@@ -14,6 +16,18 @@
   function connect_to_chat_firebase(){
     /* Include your Firebase link here!*/
     fb_instance = new Firebase("https://makikofp3.firebaseio.com");
+
+    $('#noVideo').click(function(){
+      var message = username+": " +$("#submission input").val();
+      fb_instance_stream.push({m:message, c: my_color});
+      $("#submission input").val("");
+      $('#video_options').modal('hide');
+    });
+
+    $('#okay').click(function(){
+      $("#submission input").val("");
+      $('#video_received').modal('hide');
+    });
 
     // generate new chatroom id or use existing id
     var url_segments = document.location.href.split("/#");
@@ -30,14 +44,6 @@
     var fb_instance_stream = fb_new_chat_room.child('stream');
     var my_color = "#"+((1<<24)*Math.random()|0).toString(16);
 
-    // listen to events
-    fb_instance_users.on("child_added",function(snapshot){
-      display_msg({m:snapshot.val().name+" joined the room",c: snapshot.val().c});
-    });
-    fb_instance_stream.on("child_added",function(snapshot){
-      display_msg(snapshot.val());
-    });
-
     // block until username is answered
     var username = window.prompt("Welcome, warrior! please declare your name?");
     if(!username){
@@ -46,17 +52,30 @@
     fb_instance_users.push({ name: username,c: my_color});
     $("#waiting").remove();
 
+        // listen to events
+    fb_instance_users.on("child_added",function(snapshot){
+      display_msg({m:snapshot.val().name+" joined the room",c: snapshot.val().c});
+    });
+    fb_instance_stream.on("child_added",function(snapshot){
+      display_video_received(username, message);
+      var message = snapshot.val();
+      if (messageFromPartner(message.m)) {
+        last_partner = parseMessage(message.m)[0]
+        partner_last_message = message.m;
+      }
+      display_msg(snapshot.val());
+    });
+
     // bind submission box
     $("#submission input").keydown(function( event ) {
       if (event.which == 13) {
-        if(has_emotions($(this).val())){
-          display_video_options();
-          fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blobs[0], c: my_color});
+        if(has_emotions($(this).val()) && cur_video_blobs.length > 0){
+          display_video_options(fb_instance_stream, username+": " +$(this).val(), my_color);
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
+          $(this).val("");
+          scroll_to_bottom(0);
         }
-        $(this).val("");
-        scroll_to_bottom(0);
       }
     });
 
@@ -64,26 +83,61 @@
     scroll_to_bottom(1300);
   }
 
+  function messageFromPartner(username, message) {
+    if (!message) return false;
+    var sender = message.split(":")[0];
+    return sender != username;
+  }
 
+  function parseMessage(message) {
+    var message = message.split(": ");
+    return message;
+  }
 
-  function display_video_options() {
-    console.log("displaying video options");
-    var options_div = "<div class='video_options'>"
-    for(var i=0; i<cur_video_blobs.length; i++) {
-      options_div += "<span class='option'>" + videoElement(cur_video_blobs[i]) + "</span>"
-      console.log("video " + i + "!!!");
+  function display_video_received(username, message) {
+    if (messageFromPartner(username, message.m) && last_partner == username) {
+      $('#video_received').modal('show'); 
+      parsed_message = parseMessage(message.m);
+      $('#received_title').text(parsed_message[0] + "'s reaction to your message \"" + parsed_message[1] + "\"");
+      var video = videoElement(message.v, 400);
+      var body_div = document.getElementById("received_body");
+      body_div.innerHTML = "";
+      body_div.appendChild(video);
     }
-    options_div += "</div>"
-    //document.getElementById("conversation").appendChild(options_div);
   }
 
 
-  function videoElement(data) {
+  function display_video_options(fb_instance_stream, message, color) {
+
+    $('#video_options').modal('show');   
+    var modal_div = document.getElementById("video_options");
+    var body_div = document.getElementById("options_body");
+    body_div.innerHTML = "";
+
+    var video_options = cur_video_blobs.slice(0);
+    for(var i=0; i<video_options.length; i++) {
+      var video_span = document.createElement("span");
+      video_span.className = "option";
+      video_span.setAttribute("id", i);
+      video_span.appendChild(videoElement(video_options[i], 150));
+      body_div.appendChild(video_span);
+      video_span.onclick = function() {
+        var selected_video = parseInt($(this).attr("id"));
+        fb_instance_stream.push({m: message, v:video_options[selected_video], c: color});
+        $('#video_options').modal('hide');  
+        $("#submission input").val("");
+        scroll_to_bottom();
+      }
+    }
+  }
+
+
+  function videoElement(data, width) {
     var video = document.createElement("video");
     video.autoplay = true;
     video.controls = false; // optional
     video.loop = true;
-    video.width = 120;
+    video.width = width;
 
     var source = document.createElement("source");
     source.src =  URL.createObjectURL(base64_to_blob(data));
@@ -104,7 +158,7 @@
   function display_msg(data){
     $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
     if(data.v){
-      document.getElementById("conversation").appendChild(videoElement(data.v));
+      document.getElementById("conversation").appendChild(videoElement(data.v, 120));
     }
   }
 
@@ -127,7 +181,7 @@
       // create video element, attach webcam stream to video element
       var video_width= 160;
       var video_height= 120;
-      var webcam_stream = document.getElementById('webcam_stream');
+      var webcam_stream = document.getElementById('webcam_stream_topright');
       var video = document.createElement('video');
       webcam_stream.innerHTML = "";
       // adds these properties to the video
