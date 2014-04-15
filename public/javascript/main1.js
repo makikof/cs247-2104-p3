@@ -30,13 +30,14 @@
     });
 
     // generate new chatroom id or use existing id
-    var url_segments = document.location.href.split("/#");
+    var url_segments = document.location.href.split("?");
+    console.log(url_segments);
     if(url_segments[1]){
       fb_chat_room_id = url_segments[1];
     }else{
       fb_chat_room_id = Math.random().toString(36).substring(7);
     }
-    display_msg({m:"Share this url with your friend to join this chat: "+ document.location.origin+"/#"+fb_chat_room_id,c:"red"})
+    display_msg({m:"Share this url with your friend to join this chat: "+ document.location.origin+"/proto1?"+fb_chat_room_id,c:"red"})
 
     // set up variables to access firebase data structure
     var fb_new_chat_room = fb_instance.child('chatrooms').child(fb_chat_room_id);
@@ -59,8 +60,8 @@
     fb_instance_stream.on("child_added",function(snapshot){
       var message = snapshot.val();
       display_video_received(username, message);
+      last_partner = parseMessage(message.m)[0]
       if (messageFromPartner(message.m)) {
-        last_partner = parseMessage(message.m)[0]
         partner_last_message = message.m;
       }
       display_msg(snapshot.val());
