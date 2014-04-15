@@ -16,7 +16,7 @@
 <body>
 
   <div id="waiting">Connecting to chat server...</div>
-  <div id="conversation">
+  <div id="conversation2">
       <div id="welcomeMessage">Welcome to {{title}}! Make sure to enable your camera by clicking "Allow" to post video emoji!</div>
   </div>
 
@@ -36,7 +36,7 @@
     </div>
   </div>
 
-  <div class="input-group" id="submission">
+  <div class="input-group" id="submission2">
       <a href="#" class="input-group-addon" id="addVid">Add Emoji Vid!</a>
       <input type="text" class="form-control" placeholder="Say something...">
   </div>
@@ -57,10 +57,21 @@
             <button class="btn btn-default" id="stopButton" disabled="disabled">Stop</button>
         </div>
         <div id="send_vid">
+
+          <div id="edit_buttons">
+            <button type="button" class="btn btn-default" id="normalFilter">Normal</button>
+            <button type="button" class="btn btn-default" id="grayFilter">Grayscale</button>
+            <button type="button" class="btn btn-default" id="sepiaFilter">Sepia</button>
+            <button type="button" class="btn btn-default" id="xrayFilter">X-ray</button>
+            <button type="button" class="btn btn-default" id="instaFilter">Fancy</button>
+            <button type="button" class="btn btn-default" id="insta2Filter">Fancy 2</button>
+          </div>
+          <div id="send_buttons">
             <button type="button" class="btn btn-primary" id="okButton">Looks good? Send!</button>
             <button type="button" class="btn btn-default" id="againButton">Record again!</button>
 
             <br><a href="#" id="noVideo">Send message with no video</a>
+          </div>
         </div>
       </div>
     </div>
