@@ -50,6 +50,10 @@
     $("#submission input").keydown(function( event ) {
       if (event.which == 13) {
         if(has_emotions($(this).val())){
+          $('#record_vid').show();
+          $('#webcam_stream').show();
+          $('#send_vid').hide()
+          $('#record_stream').hide();
           $('#video_chooser').modal('show');      
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
@@ -63,7 +67,15 @@
       var message = username+": " +$("#submission input").val();
       fb_instance_stream.push({m:message, v:cur_video_blob, c: my_color});
       $("#submission input").val("");
+      $("#record_stream").empty();
       $('#video_chooser').modal('hide');
+    });
+
+    $('#againButton').click(function(){
+      $("#record_stream").empty();
+      $('#record_vid').show();
+      $('#webcam_stream').fadeIn();
+      $('#send_vid').hide();
     });
 
     $('#noVideo').click(function(){
@@ -71,6 +83,14 @@
       fb_instance_stream.push({m:message, c: my_color});
       $("#submission input").val("");
       $('#video_chooser').modal('hide');
+    });
+
+    $("#addVid").click(function(){
+      $('#record_vid').show();
+      $('#webcam_stream').show();
+      $('#send_vid').hide()
+      $('#record_stream').hide();
+      $('#video_chooser').modal('show'); 
     });
 
     // scroll to bottom in case there is already content
@@ -86,7 +106,7 @@
       video.autoplay = true;
       video.controls = false; // optional
       video.loop = true;
-      video.width = 120;
+      video.width = 150;
 
       var source = document.createElement("source");
       source.src =  URL.createObjectURL(base64_to_blob(data.v));
@@ -119,20 +139,20 @@
     // callback for when we get video stream from user.
     var onMediaSuccess = function(stream) {
       // create video element, attach webcam stream to video element
-      var video_width= 160;
-      var video_height= 120;
+      var video_width= 320;
+      var video_height= 240;
       var webcam_stream = document.getElementById('webcam_stream');
-      var video = document.createElement('video');
+      var mainVideo = document.createElement('video');
       webcam_stream.innerHTML = "";
       // adds these properties to the video
-      video = mergeProps(video, {
-          controls: false,
-          width: video_width,
-          height: video_height,
-          src: URL.createObjectURL(stream)
+      mainVideo = mergeProps(mainVideo, {
+        controls: false,
+        width: video_width,
+        height: video_height,
+        src: URL.createObjectURL(stream)
       });
-      video.play();
-      webcam_stream.appendChild(video);
+      mainVideo.play();
+      webcam_stream.appendChild(mainVideo);
 
       // now record stream in 5 seconds interval
       var video_container = document.getElementById('video_container');
@@ -146,23 +166,33 @@
       mediaRecorder.video_height = video_height/2;
 
       mediaRecorder.ondataavailable = function (blob) {
-          //console.log("new data available!");
-          video_container.innerHTML = "";
+        cur_video_blob = null;
 
           // convert data into base 64 blocks
           blob_to_base64(blob,function(b64_data){
             cur_video_blob = b64_data;
           });
-      };
+        };
 
-      $('#recordButton').click(function() {
-        mediaRecorder.start(5000);
-      });
+        $('#recordButton').click(function() {
+          $(this).attr("disabled","disabled");
+          $('#stopButton').removeAttr("disabled");
+          mediaRecorder.start(5000);
+        });
 
-      $('#stopButton').click(function() {
-        mediaRecorder.stop();
-      });
-    }
+        $('#stopButton').click(function() {
+          $(this).attr("disabled","disabled");
+          $('#recordButton').removeAttr("disabled");
+          mediaRecorder.stop();
+
+          //Make the other things go away
+          $('#record_vid').hide();
+          $('#webcam_stream').hide();
+
+          createPreviewVid();
+          $('#send_vid').fadeIn();
+        });
+      }
 
     // callback if there is an error when we try and get the video stream
     var onMediaError = function(e) {
@@ -172,6 +202,27 @@
     // get video stream from user. see https://github.com/streamproc/MediaStreamRecorder
     navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
   };
+
+  function createPreviewVid() {
+    if(!cur_video_blob) {
+      setTimeout(createPreviewVid, 50);
+      return;
+    }
+
+    var video = document.createElement("video");
+    video.autoplay = true;
+    video.controls = false; // optional
+    video.loop = true;
+    video.width = 320;
+    var source = document.createElement("source");
+    source.src =  URL.createObjectURL(base64_to_blob(cur_video_blob));
+    video.play();
+    source.type =  "video/webm";
+    video.appendChild(source);
+    var record_stream = document.getElementById('record_stream');
+    record_stream.appendChild(video);
+    $('#record_stream').fadeIn();
+  }
 
   // check to see if a message qualifies to be replaced with video.
   var has_emotions = function(msg){

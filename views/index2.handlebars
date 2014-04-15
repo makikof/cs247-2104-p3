@@ -19,8 +19,9 @@
   <div id="conversation">
       <div id="welcomeMessage">Welcome to {{title}}! Make sure to enable your camera by clicking "Allow" to post video emoji!</div>
   </div>
-  <div id="submission">
-    <input type="text" placeholder="Say something...">
+  <div class="input-group" id="submission">
+      <a href="#" class="input-group-addon" id="addVid">Add Emoji Vid!</a>
+      <input type="text" class="form-control" placeholder="Say something...">
   </div>
 
 
@@ -31,14 +32,19 @@
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title" id="myModalLabel">Record your emotion!</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" id="tmpVideo">
         <div id="webcam_stream"></div>
-        <button class="btn btn-default" id="recordButton">Record</button>
-        <button class="btn btn-default" id="stopButton">Stop</button>
-      </div>
-      <div class="modal-footer">
-        <a href="#" id="noVideo">Send with no video</a>
-        <button type="button" class="btn btn-default" id="okButton">Send!</button>
+        <div id="record_stream"></div>
+        <div id="record_vid">
+            <button class="btn btn-default" id="recordButton">Record</button>
+            <button class="btn btn-default" id="stopButton" disabled="disabled">Stop</button>
+        </div>
+        <div id="send_vid">
+            <button type="button" class="btn btn-primary" id="okButton">Looks good? Send!</button>
+            <button type="button" class="btn btn-default" id="againButton">Record again!</button>
+
+            <br><a href="#" id="noVideo">Send message with no video</a>
+        </div>
       </div>
     </div>
   </div>
