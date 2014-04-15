@@ -60,8 +60,8 @@
     fb_instance_stream.on("child_added",function(snapshot){
       var message = snapshot.val();
       display_video_received(username, message);
+      last_partner = parseMessage(message.m)[0]
       if (messageFromPartner(message.m)) {
-        last_partner = parseMessage(message.m)[0]
         partner_last_message = message.m;
       }
       display_msg(snapshot.val());
