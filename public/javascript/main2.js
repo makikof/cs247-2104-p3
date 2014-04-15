@@ -5,6 +5,7 @@
 
   var cur_video_blob = null;
   var fb_instance;
+  var username = null;
 
   $(document).ready(function(){
     
@@ -45,12 +46,13 @@
     fb_instance_users.on("child_added",function(snapshot){
       display_msg({m:snapshot.val().name+" joined the room",c: snapshot.val().c});
     });
+
     fb_instance_stream.on("child_added",function(snapshot){
       display_msg(snapshot.val());
     });
 
     // block until username is answered
-    var username = window.prompt("Hi! What's your name?");
+    username = window.prompt("Hi! What's your name?");
     if(!username){
       username = "anonymous"+Math.floor(Math.random()*1111);
     }
