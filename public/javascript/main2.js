@@ -225,6 +225,12 @@
           mediaRecorder.start(5000);
         });
 
+        $('#add-text').click(function() {
+          var text_to_add = $('#text-to-add').val();
+          document.getElementById('text-overlay').innerHTML = text_to_add;
+          $('text-to-add').val('');
+        });
+
         $('#stopButton').click(function() {
           $(this).attr("disabled","disabled");
           $('#recordButton').removeAttr("disabled");

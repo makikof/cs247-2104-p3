@@ -52,7 +52,7 @@
       <div class="modal-body" id="tmpVideo">
         <div class="video-container">
           <div id="webcam_stream"></div>
-          <div id="text-overlay">lol</div>
+          <div id="text-overlay"></div>
           <div id="record_stream"></div>
         </div>
         <div id="record_vid">
@@ -60,6 +60,9 @@
             <button class="btn btn-default" id="stopButton" disabled="disabled">Stop</button>
         </div>
         <div id="send_vid">
+              <input type="text" id="text-to-add" class="span2" maxlength="5">
+              <button type="submit" id="add-text" class="btn btn-default">Add text!</button>
+              <br>
             <button type="button" class="btn btn-primary" id="okButton">Looks good? Send!</button>
             <button type="button" class="btn btn-default" id="againButton">Record again!</button>
 

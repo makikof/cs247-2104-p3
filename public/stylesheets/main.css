@@ -21,8 +21,9 @@
   position: absolute;
   z-index: 1000;
   color: white;
-  font-size: 24pt;
-  top: 10px;
+  font-size: 40pt;
+  font-family: "Helvetica";
+  top: 3px;
   left: 10px;
 }
 #webcam_stream video {
