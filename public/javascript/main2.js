@@ -97,6 +97,8 @@
           $('#webcam_stream').show();
           $('#send_vid').hide()
           $('#record_stream').hide();
+          document.getElementById('text-overlay').innerHTML = "";
+          $('#text-to-add').val("");
           $('#video_chooser').modal('show');      
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color, u:username});
@@ -109,7 +111,8 @@
     $('#okButton').click(function(){
       var message = username+": " +$("#submission2 input").val();
       var className = $('#previewVid').attr('class');
-      fb_instance_stream.push({m:message, v:cur_video_blob, c: my_color, u:username, vcl: className});
+      var text_to_add = $('#text-to-add').val();
+      fb_instance_stream.push({m:message, v:cur_video_blob, c: my_color, u:username, vcl: className, t: text_to_add});
       $("#submission2 input").val("");
       $("#record_stream").empty();
       $('#video_chooser').modal('hide');
@@ -133,8 +136,11 @@
     $("#addVid").click(function(){
       $('#record_vid').show();
       $('#webcam_stream').show();
-      $('#send_vid').hide()
+      $('#send_vid').hide();
       $('#record_stream').hide();
+      document.getElementById('text-overlay').innerHTML = "";
+      console.log($('#text-overlay').innerHTML);
+      $('#text-to-add').val('');
       $('#video_chooser').modal('show'); 
     });
 
@@ -147,6 +153,16 @@
     $("#conversation2").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
     if(data.v){
       // for video element
+      var container = document.createElement('div');
+      container.className = "video-container";
+
+      if(data.t) {
+        var text_overlay = document.createElement('div');
+        text_overlay.setAttribute('id', 'text-overlay-2');
+        text_overlay.innerHTML = data.t;
+        container.appendChild(text_overlay);
+      }
+
       var video = document.createElement("video");
       video.className = data.vcl;
       video.autoplay = true;
@@ -164,7 +180,8 @@
       // var video = document.createElement("img");
       // video.src = URL.createObjectURL(base64_to_blob(data.v));
 
-      document.getElementById("conversation2").appendChild(video);
+      container.appendChild(video);
+      document.getElementById("conversation2").appendChild(container);
 
       //Real version will check beforehand if username is unique or not
       if (data.u === username){
@@ -172,6 +189,7 @@
       }else{
         display_emoji(data, 2);
       }
+
     }
   }
 
@@ -182,6 +200,17 @@
     }else{ //if their emoji
       emojibox = $("#theirEmojis");
     }
+
+      var container = document.createElement('div');
+      container.className = "video-container";
+
+      if(data.t) {
+        var text_overlay = document.createElement('div');
+        text_overlay.setAttribute('id', 'text-overlay-3');
+        text_overlay.innerHTML = data.t;
+        container.appendChild(text_overlay);
+      }
+
 
     // for video element
     var video = document.createElement("video");
@@ -197,7 +226,8 @@
 
     video.appendChild(source);
 
-    emojibox.append(video);
+    container.appendChild(video);
+    emojibox.append(container);
   }
 
   function scroll_to_bottom(wait_time){

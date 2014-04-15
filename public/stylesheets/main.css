@@ -26,6 +26,22 @@
   top: 3px;
   left: 10px;
 }
+#text-overlay-2 {
+  position: absolute;
+  z-index: 1000;
+  color: white;
+  font-size: 16pt;
+  font-family: "Helvetica";
+  left: 5px;
+}
+#text-overlay-3 {
+  position: absolute;
+  z-index: 1000;
+  color: white;
+  font-size: 28pt;
+  font-family: "Helvetica";
+  left: 5px;
+}
 #webcam_stream video {
   border: 2px solid #dcc;
 }
@@ -52,6 +68,11 @@ a {
   color: white;
   z-index: 999;
 }
+#conversation1 {
+  padding: 10px 10px 80px;
+  overflow-y: scroll;
+  height: 100%;
+}
 #conversation2 {
   padding: 10px 10px 80px;
   overflow-y: scroll;
@@ -73,6 +94,22 @@ a {
 }
 #theirEmojis {
   display: none;
+}
+#submission {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  right: 0;
+  border-top: 2px solid #dcc;
+  background: #fff;
+}
+#submission input {
+  border: none;
+  font-size: 15px;
+  padding: 15px;
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
 }
 #submission2 {
   position: fixed;
