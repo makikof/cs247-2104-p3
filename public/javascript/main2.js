@@ -19,6 +19,36 @@
       $("#yourEmojis").fadeOut();
     });
 
+    $("#grayFilter").click(function(){
+      $("#previewVid").removeClass("normal sepia xray insta insta2");
+      $("#previewVid").addClass("grayscale");
+    });
+
+    $("#sepiaFilter").click(function(){
+      $("#previewVid").removeClass("normal grayscale xray insta insta2");
+      $("#previewVid").addClass("sepia");
+    });
+
+    $("#normalFilter").click(function(){
+      $("#previewVid").removeClass("grayscale sepia xray insta insta2");
+      $("#previewVid").addClass("normal");
+    });
+
+    $("#xrayFilter").click(function(){
+      $("#previewVid").removeClass("normal grayscale sepia insta insta2");
+      $("#previewVid").addClass("xray");
+    });
+
+    $("#instaFilter").click(function(){
+      $("#previewVid").removeClass("normal grayscale sepia xray insta2");
+      $("#previewVid").addClass("insta");
+    });
+
+    $("#insta2Filter").click(function(){
+      $("#previewVid").removeClass("normal grayscale sepia insta xray");
+      $("#previewVid").addClass("insta2");
+    });
+
     connect_to_chat_firebase();
     connect_webcam();
   });
@@ -60,7 +90,7 @@
     $("#waiting").remove();
 
     // bind submission box
-    $("#submission input").keydown(function( event ) {
+    $("#submission2 input").keydown(function( event ) {
       if (event.which == 13) {
         if(has_emotions($(this).val())){
           $('#record_vid').show();
@@ -77,9 +107,10 @@
     });
 
     $('#okButton').click(function(){
-      var message = username+": " +$("#submission input").val();
-      fb_instance_stream.push({m:message, v:cur_video_blob, c: my_color, u:username});
-      $("#submission input").val("");
+      var message = username+": " +$("#submission2 input").val();
+      var className = $('#previewVid').attr('class');
+      fb_instance_stream.push({m:message, v:cur_video_blob, c: my_color, u:username, vcl: className});
+      $("#submission2 input").val("");
       $("#record_stream").empty();
       $('#video_chooser').modal('hide');
     });
@@ -92,10 +123,10 @@
     });
 
     $('#noVideo').click(function(){
-      var message = username+": " +$("#submission input").val();
+      var message = username+": " +$("#submission2 input").val();
       fb_instance_stream.push({m:message, c: my_color, u:username});
       $("#record_stream").empty();
-      $("#submission input").val("");
+      $("#submission2 input").val("");
       $('#video_chooser').modal('hide');
     });
 
@@ -113,10 +144,11 @@
 
   // creates a message node and appends it to the conversation
   function display_msg(data){
-    $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
+    $("#conversation2").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
     if(data.v){
       // for video element
       var video = document.createElement("video");
+      video.className = data.vcl;
       video.autoplay = true;
       video.controls = false; // optional
       video.loop = true;
@@ -132,18 +164,18 @@
       // var video = document.createElement("img");
       // video.src = URL.createObjectURL(base64_to_blob(data.v));
 
-      document.getElementById("conversation").appendChild(video);
+      document.getElementById("conversation2").appendChild(video);
 
       //Real version will check beforehand if username is unique or not
       if (data.u === username){
-        display_emoji(data.v, 1);
+        display_emoji(data, 1);
       }else{
-        display_emoji(data.v, 2);
+        display_emoji(data, 2);
       }
     }
   }
 
-  function display_emoji(vid_blob, youMe){
+  function display_emoji(data, youMe){
     var emojibox;
     if(youMe==1){ //if your emoji
       emojibox = $("#yourEmojis");
@@ -153,13 +185,14 @@
 
     // for video element
     var video = document.createElement("video");
+    video.className = data.vcl;
     video.autoplay = true;
     video.controls = false; // optional
     video.loop = true;
     video.width = 200;
 
     var source = document.createElement("source");
-    source.src =  URL.createObjectURL(base64_to_blob(vid_blob));
+    source.src =  URL.createObjectURL(base64_to_blob(data.v));
     source.type =  "video/webm";
 
     video.appendChild(source);
@@ -196,6 +229,7 @@
         height: video_height,
         src: URL.createObjectURL(stream)
       });
+
       mainVideo.play();
       webcam_stream.appendChild(mainVideo);
 
@@ -261,6 +295,8 @@
     }
 
     var video = document.createElement("video");
+    video.id = "previewVid";
+    video.className = "normal";
     video.autoplay = true;
     video.controls = false; // optional
     video.loop = true;

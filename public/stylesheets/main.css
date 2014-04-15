@@ -52,7 +52,7 @@ a {
   color: white;
   z-index: 999;
 }
-#conversation {
+#conversation2 {
   padding: 10px 10px 80px;
   overflow-y: scroll;
   height: 100%;
@@ -74,7 +74,7 @@ a {
 #theirEmojis {
   display: none;
 }
-#submission {
+#submission2 {
   position: fixed;
   bottom: 0;
   width: 70%;
@@ -83,7 +83,7 @@ a {
   border-right: medium solid #aaaaaa;
   background: #fff;
 }
-#submission input {
+#submission2 input {
   border: none;
   font-size: 15px;
   padding: 15px;
@@ -123,4 +123,22 @@ a {
   bottom: 0;
   width: 30%;
   right: 0;
+}
+.grayscale {
+  -webkit-filter: grayscale(100%);
+}
+.sepia {
+  -webkit-filter: sepia(100%);
+}
+.xray {
+  -webkit-filter: invert(100%);
+}
+.insta {
+  -webkit-filter: contrast(160%);
+}
+.insta2 {
+  -webkit-filter: saturate(3);
+}
+#edit_buttons {
+  padding: 10px 0;
 }
