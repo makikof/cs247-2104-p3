@@ -8,36 +8,12 @@ a {
 #webcam_stream {
   padding: 0;
 }
-
-#webcam_stream_topright {
-  padding: 0;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-
-}
-
 #webcam_stream video {
   border: 2px solid #dcc;
 }
-
 #video_chooser {
   text-align: center;
 }
-
-#received_body {
-  text-align: center;
-}
-
-#options_body {
-  width: 100%;
-  text-align: center;
-}
-
-.option {
-  margin: 15px;
-}
-
 #second_counter {
   position: fixed;
   top: 20px;
@@ -49,13 +25,30 @@ a {
   padding: 10px 10px 80px;
   overflow-y: scroll;
   height: 100%;
+  width: 70%;
+  word-wrap: break-word;
+  border-right: medium solid #aaaaaa;
+}
+#yourEmojis,
+#theirEmojis {
+  padding: 10px 10px 80px;
+  overflow-y: scroll;
+  width: 30%;
+  height: 100%;
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+#theirEmojis {
+  display: none;
 }
 #submission {
   position: fixed;
   bottom: 0;
-  width: 100%;
-  right: 0;
+  width: 70%;
+  left: 0;
   border-top: 2px solid #dcc;
+  border-right: medium solid #aaaaaa;
   background: #fff;
 }
 #submission input {
@@ -88,4 +81,10 @@ a {
 }
 #record_stream {
   display: none;
+}
+#emojiSelector {
+  position: fixed;
+  bottom: 0;
+  width: 30%;
+  right: 0;
 }

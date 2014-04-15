@@ -7,6 +7,17 @@
   var fb_instance;
 
   $(document).ready(function(){
+    
+    $("#myEmojiSelector").click(function(){
+      $("#yourEmojis").fadeIn();
+      $("#theirEmojis").fadeOut();
+    });
+
+    $("#theirEmojiSelector").click(function(){
+      $("#theirEmojis").fadeIn();
+      $("#yourEmojis").fadeOut();
+    });
+
     connect_to_chat_firebase();
     connect_webcam();
   });
@@ -56,7 +67,7 @@
           $('#record_stream').hide();
           $('#video_chooser').modal('show');      
         }else{
-          fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
+          fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color, u:username});
           $(this).val("");
         }
         scroll_to_bottom(0);
@@ -65,7 +76,7 @@
 
     $('#okButton').click(function(){
       var message = username+": " +$("#submission input").val();
-      fb_instance_stream.push({m:message, v:cur_video_blob, c: my_color});
+      fb_instance_stream.push({m:message, v:cur_video_blob, c: my_color, u:username});
       $("#submission input").val("");
       $("#record_stream").empty();
       $('#video_chooser').modal('hide');
@@ -80,7 +91,8 @@
 
     $('#noVideo').click(function(){
       var message = username+": " +$("#submission input").val();
-      fb_instance_stream.push({m:message, c: my_color});
+      fb_instance_stream.push({m:message, c: my_color, u:username});
+      $("#record_stream").empty();
       $("#submission input").val("");
       $('#video_chooser').modal('hide');
     });
@@ -119,7 +131,38 @@
       // video.src = URL.createObjectURL(base64_to_blob(data.v));
 
       document.getElementById("conversation").appendChild(video);
+
+      //Real version will check beforehand if username is unique or not
+      if (data.u === username){
+        display_emoji(data.v, 1);
+      }else{
+        display_emoji(data.v, 2);
+      }
     }
+  }
+
+  function display_emoji(vid_blob, youMe){
+    var emojibox;
+    if(youMe==1){ //if your emoji
+      emojibox = $("#yourEmojis");
+    }else{ //if their emoji
+      emojibox = $("#theirEmojis");
+    }
+
+    // for video element
+    var video = document.createElement("video");
+    video.autoplay = true;
+    video.controls = false; // optional
+    video.loop = true;
+    video.width = 200;
+
+    var source = document.createElement("source");
+    source.src =  URL.createObjectURL(base64_to_blob(vid_blob));
+    source.type =  "video/webm";
+
+    video.appendChild(source);
+
+    emojibox.append(video);
   }
 
   function scroll_to_bottom(wait_time){

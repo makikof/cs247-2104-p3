@@ -19,6 +19,23 @@
   <div id="conversation">
       <div id="welcomeMessage">Welcome to {{title}}! Make sure to enable your camera by clicking "Allow" to post video emoji!</div>
   </div>
+
+  <div id="yourEmojis">
+    <h3>My Emojis</h3>
+  </div>
+  <div id="theirEmojis">
+    <h3>Received Emojis</h3>
+  </div>
+
+  <div class="btn-group btn-group-justified" id="emojiSelector">
+    <div class="btn-group">
+      <button type="button" class="btn btn-default" id="myEmojiSelector">My Emojis</button>
+    </div>
+    <div class="btn-group">
+      <button type="button" class="btn btn-default" id="theirEmojiSelector">Received Emojis</button>
+    </div>
+  </div>
+
   <div class="input-group" id="submission">
       <a href="#" class="input-group-addon" id="addVid">Add Emoji Vid!</a>
       <input type="text" class="form-control" placeholder="Say something...">
