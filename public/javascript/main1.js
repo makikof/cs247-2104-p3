@@ -59,11 +59,13 @@
     });
     fb_instance_stream.on("child_added",function(snapshot){
       var message = snapshot.val();
+      // if (messageFromPartner(message.m)) {
+      //   partner_last_message = message.m;
+      // }
       display_video_received(username, message);
-      last_partner = parseMessage(message.m)[0]
-      if (messageFromPartner(message.m)) {
-        partner_last_message = message.m;
-      }
+      var parsed_message = parseMessage(message.m);
+      last_partner = parsed_message[0];
+      last_message = parsed_message[1];
       display_msg(snapshot.val());
     });
 
@@ -75,7 +77,7 @@
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
           $(this).val("");
-          scroll_to_bottom(0);
+          scroll_to_bottom(1300);
         }
       }
     });
@@ -96,10 +98,10 @@
   }
 
   function display_video_received(username, message) {
-    if (messageFromPartner(username, message.m) && last_partner == username) {
+    if (message.v && messageFromPartner(username, message.m) && last_partner == username) {
       $('#video_received').modal('show'); 
       parsed_message = parseMessage(message.m);
-      $('#received_title').text(parsed_message[0] + "'s reaction to your message \"" + parsed_message[1] + "\"");
+      $('#received_title').text(parsed_message[0] + "'s reaction to your message \"" + last_message + "\"");
       var video = videoElement(message.v, 400);
       var body_div = document.getElementById("received_body");
       body_div.innerHTML = "";
@@ -127,7 +129,7 @@
         fb_instance_stream.push({m: message, v:video_options[selected_video], c: color});
         $('#video_options').modal('hide');  
         $("#submission input").val("");
-        scroll_to_bottom();
+        scroll_to_bottom(1300);
       }
     }
   }

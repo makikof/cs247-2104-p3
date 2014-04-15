@@ -1,3 +1,33 @@
+.video-container {
+  position: relative;
+  display: inline-block;
+}
+#webcam_stream_topright {
+  padding: 0;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+#video_chooser {
+  text-align: center;
+}
+#options_body {
+  text-align: center;
+}
+.option {
+  margin: 10px;
+}
+#text-overlay {
+  position: absolute;
+  z-index: 1000;
+  color: white;
+  font-size: 24pt;
+  top: 10px;
+  left: 10px;
+}
+#webcam_stream video {
+  border: 2px solid #dcc;
+}
 body {
   margin: 10px;
   font: 15px "Lucida Grande", Helvetica, Arial, sans-serif;
